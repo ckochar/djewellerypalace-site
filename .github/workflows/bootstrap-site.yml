@@ -1,0 +1,64 @@
+name: Bootstrap exact site
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  bootstrap:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Download exact source files
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p img video
+          dl() { curl -fL --retry 3 --retry-delay 2 "https://drive.usercontent.google.com/download?id=$1&export=download&confirm=t" -o "$2"; }
+          dl 129_VFB3kfW8I3a4T1Vey0kr1q741uvhH index.html
+          dl 1DtuUjvmYdkYWaL2XdJN0FQc_g_fgl6Qf README.md
+          dl 1Cnlr9OkFiR-4uljINcVJNw4nilTBdpaP img/bridal-set-poster.jpg
+          dl 1AkMEhRrRx75nMdZuigfa2WrkbD0lqE-V img/palace-jhumka.jpg
+          dl 1ZfSezvNtWiBPoz7L2J0i2x_sNtKWU2YC img/palace-chains.jpg
+          dl 1jaiv_OOYkcQ5L8Ia3WD6Q-yhTHkquN8n img/palace-kundan.jpg
+          dl 15k8dqHsa2NE47au9OHNTNRCnlczBjYIr img/logo-meroha-m-white.png
+          dl 1QOnFtoP8U71PBRXS87amrNDyyHUfAiad img/apple-touch-icon.png
+          dl 1-qT-tun_UMT2GinMr9mZjIgkKUSzqHfc img/set-antique-choker.jpg
+          dl 1-ahu6tWTWXngRJ6x_SlaRhz0KzqutNFo img/meroha-interior-2.jpg
+          dl 1JCQMjH_M7tVARuAQc3NYB4BMFIVK8gnE img/palace-front.jpg
+          dl 1dpGTRoJlGSOQ6Nz12w1jk64pcdalopO5 img/palace-interior.jpg
+          dl 1-D0L2fUlzIGgw6aldauBV4EF4WYkmv0e img/palace-counter.jpg
+          dl 1gVUEDW6j7BJHRpK7n0W8mt5kJjEE96Vm img/logo-palace-tree-gold.png
+          dl 1rzVRViDRR72OjqYZN00Sg3cmqrsVIFt4 img/meroha-front.jpg
+          dl 1b3PL_M6xmHjnhJLfirJPXJOCBG7LlGzo img/set-floral-ad.jpg
+          dl 1N20X3yjEm9fus2__XqlA1vYvB7HYz_qm img/og.jpg
+          dl 156YvVHTNIN_Kkk9eUDwSyNO_bWz3mHuw img/palace-bangles.jpg
+          dl 1VRZ29A6ezSY9nwq14xahP0qYqyd-STNM img/palace-niche.jpg
+          dl 19BfAIHrfbdGXsoNSJWZxCGbFegf0qM1o img/bridal-ad-full.jpg
+          dl 1yCArJYguDlJUplGUL9GDGiqmN0iJtp9j img/meroha-interior.jpg
+          dl 1AUWBPND43L2opLDxO860yJeAA5cp2xtk img/meroha-kundan-shelf.jpg
+          dl 19JMWyycYp0Q7f5qnr6vIJGV9Nd_Qmq3I img/set-emerald-ad.jpg
+          dl 10Px8TQLo3HSBhJUGeZmNtTQpNC8z2Bcg img/palace-tour-poster.jpg
+          dl 1Z4zJlWEgnUHY6TOVMvwPHE5MbPKUeb4I img/favicon.png
+          dl 1pA5XfLDjz_lUCZtfBLinjQsGwNOoNE6P img/palace-wall.jpg
+          dl 1Bbfg_WLkdtSxJqwIKfLZw4lA35GvOy-b img/bridal-ad.jpg
+          dl 13h4bsGUIutdxzckF8hJIt1KD3iky4J8J video/palace-tour.mp4
+          dl 19-YktOZxjNkLitDeDtlZ8Q1gBJHNJKD9 video/bridal-set.mp4
+      - name: Remove bootstrap workflow and commit site
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .github/workflows/bootstrap-site.yml
+          rmdir .github/workflows 2>/dev/null || true
+          rmdir .github 2>/dev/null || true
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Deploy exact D Jewellery Palace site"
+          git push origin main
