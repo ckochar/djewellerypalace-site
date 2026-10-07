@@ -1,0 +1,54 @@
+name: Repair site with verified Drive files
+on:
+  push:
+    paths:
+      - '.github/workflows/repair-direct.yml'
+permissions:
+  contents: write
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download and validate exact files
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p img video
+          dl() { id="$1"; path="$2"; size="$3"; curl -L --fail --retry 3 --connect-timeout 15 --max-time 90 "https://drive.usercontent.google.com/download?id=${id}&export=download&confirm=t" -o "$path"; actual=$(stat -c%s "$path"); test "$actual" -eq "$size"; }
+          dl 129_VFB3kfW8I3a4T1Vey0kr1q741uvhH index.html 25962
+          dl 1DtuUjvmYdkYWaL2XdJN0FQc_g_fgl6Qf README.md 756
+          dl 1Cnlr9OkFiR-4uljINcVJNw4nilTBdpaP img/bridal-set-poster.jpg 219555
+          dl 1AkMEhRrRx75nMdZuigfa2WrkbD0lqE-V img/palace-jhumka.jpg 269549
+          dl 1ZfSezvNtWiBPoz7L2J0i2x_sNtKWU2YC img/palace-chains.jpg 175676
+          dl 1jaiv_OOYkcQ5L8Ia3WD6Q-yhTHkquN8n img/palace-kundan.jpg 104789
+          dl 15k8dqHsa2NE47au9OHNTNRCnlczBjYIr img/logo-meroha-m-white.png 33208
+          dl 1QOnFtoP8U71PBRXS87amrNDyyHUfAiad img/apple-touch-icon.png 25290
+          dl 1-qT-tun_UMT2GinMr9mZjIgkKUSzqHfc img/set-antique-choker.jpg 146924
+          dl 1-ahu6tWTWXngRJ6x_SlaRhz0KzqutNFo img/meroha-interior-2.jpg 113356
+          dl 1JCQMjH_M7tVARuAQc3NYB4BMFIVK8gnE img/palace-front.jpg 188120
+          dl 1dpGTRoJlGSOQ6Nz12w1jk64pcdalopO5 img/palace-interior.jpg 71569
+          dl 1-D0L2fUlzIGgw6aldauBV4EF4WYkmv0e img/palace-counter.jpg 132851
+          dl 1gVUEDW6j7BJHRpK7n0W8mt5kJjEE96Vm img/logo-palace-tree-gold.png 109999
+          dl 1rzVRViDRR72OjqYZN00Sg3cmqrsVIFt4 img/meroha-front.jpg 148381
+          dl 1b3PL_M6xmHjnhJLfirJPXJOCBG7LlGzo img/set-floral-ad.jpg 138047
+          dl 1N20X3yjEm9fus2__XqlA1vYvB7HYz_qm img/og.jpg 73052
+          dl 156YvVHTNIN_Kkk9eUDwSyNO_bWz3mHuw img/palace-bangles.jpg 114562
+          dl 1VRZ29A6ezSY9nwq14xahP0qYqyd-STNM img/palace-niche.jpg 93575
+          dl 19BfAIHrfbdGXsoNSJWZxCGbFegf0qM1o img/bridal-ad-full.jpg 165927
+          dl 1yCArJYguDlJUplGUL9GDGiqmN0iJtp9j img/meroha-interior.jpg 141881
+          dl 1AUWBPND43L2opLDxO860yJeAA5cp2xtk img/meroha-kundan-shelf.jpg 129560
+          dl 19JMWyycYp0Q7f5qnr6vIJGV9Nd_Qmq3I img/set-emerald-ad.jpg 162229
+          dl 10Px8TQLo3HSBhJUGeZmNtTQpNC8z2Bcg img/palace-tour-poster.jpg 96746
+          dl 1Z4zJlWEgnUHY6TOVMvwPHE5MbPKUeb4I img/favicon.png 40358
+          dl 1pA5XfLDjz_lUCZtfBLinjQsGwNOoNE6P img/palace-wall.jpg 151283
+          dl 1Bbfg_WLkdtSxJqwIKfLZw4lA35GvOy-b img/bridal-ad.jpg 219555
+          dl 13h4bsGUIutdxzckF8hJIt1KD3iky4J8J video/palace-tour.mp4 1786233
+          dl 19-YktOZxjNkLitDeDtlZ8Q1gBJHNJKD9 video/bridal-set.mp4 2796859
+      - name: Commit verified files
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add README.md index.html img video
+          git commit -m 'Restore verified original site files'
+          git push
